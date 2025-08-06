@@ -1,128 +1,95 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Calendar, User, Clock, Tag, Search, Filter, Eye } from 'lucide-react';
-import { useExcelData } from '../hooks/useExcelData';
+import {
+  Calendar,
+  User,
+  Clock,
+  Tag,
+  Search,
+  Filter,
+  Eye,
+  Sparkles,
+} from 'lucide-react';
+
+// URL Google Spreadsheet kamu:
+const SHEET_URL =
+  'https://opensheet.elk.sh/13eeM4b6n5qSS4F_PtCDhNX3cEhzkxEbZEwPFILNYFAk/1';
 
 const Articles = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // URL untuk Google Sheets (format CSV export)
-  // Ganti dengan URL Google Sheets Anda yang sudah di-publish sebagai CSV
-  const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/export?format=csv';
-  
-  // Contoh data articles jika tidak menggunakan Google Sheets
-  const sampleArticles = [
-    {
-      id: 1,
-      title: "Masa Depan Artificial Intelligence dalam Bisnis",
-      excerpt: "Bagaimana AI mengubah landscape bisnis modern dan apa yang perlu disiapkan perusahaan untuk mengadopsi teknologi ini secara efektif.",
-      content: "Artificial Intelligence (AI) telah menjadi salah satu teknologi paling transformatif dalam dekade ini...",
-      author: "Dr. Ahmad Rizki",
-      date: "2024-01-15",
-      category: "AI & Machine Learning",
-      readTime: "8 min read",
-      tags: ["AI", "Business", "Technology", "Innovation"],
-      image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&h=400&fit=crop",
-      views: 1250
-    },
-    {
-      id: 2,
-      title: "Panduan Lengkap React 18 dan Fitur Terbaru",
-      excerpt: "Eksplorasi mendalam tentang fitur-fitur baru React 18 termasuk Concurrent Features, Suspense, dan Server Components.",
-      content: "React 18 membawa berbagai peningkatan signifikan yang mengubah cara kita membangun aplikasi web...",
-      author: "Sari Dewi",
-      date: "2024-01-12",
-      category: "Web Development",
-      readTime: "12 min read",
-      tags: ["React", "JavaScript", "Frontend", "Development"],
-      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop",
-      views: 890
-    },
-    {
-      id: 3,
-      title: "Cloud Computing: AWS vs Azure vs Google Cloud",
-      excerpt: "Perbandingan komprehensif antara tiga provider cloud terbesar dan panduan memilih yang tepat untuk bisnis Anda.",
-      content: "Dalam era digital ini, cloud computing telah menjadi backbone infrastruktur IT modern...",
-      author: "Budi Santoso",
-      date: "2024-01-10",
-      category: "Cloud Computing",
-      readTime: "15 min read",
-      tags: ["AWS", "Azure", "Google Cloud", "Infrastructure"],
-      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop",
-      views: 2100
-    },
-    {
-      id: 4,
-      title: "Cybersecurity Best Practices untuk Developer",
-      excerpt: "Panduan essential untuk mengembangkan aplikasi yang aman dan melindungi data pengguna dari berbagai ancaman cyber.",
-      content: "Keamanan siber bukan lagi pilihan, tetapi keharusan dalam pengembangan aplikasi modern...",
-      author: "Maya Putri",
-      date: "2024-01-08",
-      category: "Security",
-      readTime: "10 min read",
-      tags: ["Security", "Best Practices", "Development", "Privacy"],
-      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop",
-      views: 756
-    },
-    {
-      id: 5,
-      title: "DevOps Culture: Transformasi Digital yang Efektif",
-      excerpt: "Bagaimana implementasi budaya DevOps dapat meningkatkan efisiensi tim development dan operational excellence.",
-      content: "DevOps bukan hanya tentang tools dan teknologi, tetapi fundamental tentang budaya dan mindset...",
-      author: "Andi Wijaya",
-      date: "2024-01-05",
-      category: "DevOps",
-      readTime: "11 min read",
-      tags: ["DevOps", "Culture", "Automation", "CI/CD"],
-      image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=800&h=400&fit=crop",
-      views: 1340
-    },
-    {
-      id: 6,
-      title: "UI/UX Design Trends 2024",
-      excerpt: "Tren desain terbaru yang akan mendominasi industri digital dan bagaimana mengimplementasikannya dalam proyek Anda.",
-      content: "Industri UI/UX design terus berkembang dengan tren dan teknologi baru yang emerging...",
-      author: "Lisa Maharani",
-      date: "2024-01-03",
-      category: "Design",
-      readTime: "9 min read",
-      tags: ["UI/UX", "Design", "Trends", "User Experience"],
-      image: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=400&fit=crop",
-      views: 980
-    }
-  ];
+  // Fetch dari Google Sheets
+  useEffect(() => {
+    fetch(SHEET_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((item, index) => ({
+          id: index + 1,
+          title: item['Judul Artikel'],
+          excerpt: item['Materi Artikel Bagian 1']?.slice(0, 150) + '...',
+          content: item['Materi Artikel Bagian 1'] + '\n\n' + item['Materi Artikel Bagian 2'],
+          author: 'AdvanTech Team',
+          date: new Date().toISOString().split('T')[0],
+          category: item['Kategori'] || 'Umum',
+          readTime: `${Math.ceil(
+            ((item['Materi Artikel Bagian 1']?.length || 0) +
+              (item['Materi Artikel Bagian 2']?.length || 0)) /
+              650
+          )} min read`,
+          tags: ['Artikel', 'Tim'],
+          image: item['Link Gambar 1 (Header)'],
+          conclusion: item['Kesimpulan'],
+        }));
 
-  const { data: excelData, loading, error } = useExcelData(GOOGLE_SHEETS_URL);
-  
-  // Gunakan data dari Excel/Google Sheets jika tersedia, jika tidak gunakan sample data
-  const articles = excelData.length > 0 ? excelData : sampleArticles;
-
-  const categories = ['all', ...new Set(articles.map(article => article.category))];
+        setArticles(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Gagal fetch dari spreadsheet:', err);
+        setError(true);
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
-    let filtered = articles;
+    let filtered = [...articles];
 
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(article => article.category === selectedCategory);
+      filtered = filtered.filter(
+        (article) =>
+          article.category &&
+          article.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (article) =>
+          article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.tags?.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase())
+          )
       );
     }
 
     setFilteredArticles(filtered);
-  }, [articles, searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, articles]);
+
+  const categories = [
+    'all',
+    ...new Set(articles.map((article) => article.category || 'Umum')),
+  ];
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-20 flex items-center justify-center">
+      <div className="min-h-screen pt-20 flex items-center justify-center bg-slate-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Loading articles...</p>
@@ -132,32 +99,40 @@ const Articles = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-white dark:bg-gray-900">
+      {/* HERO */}
+      <section className="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 pt-20 pb-10 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-blue-300/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
+          <div className="absolute bottom-0 right-0 w-72 h-72 md:w-96 md:h-96 bg-purple-300/20 dark:bg-purple-500/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <div className="mb-6">
+              <span className="inline-flex items-center px-4 py-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-white/30 dark:border-gray-700/50 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300">
+                <Sparkles className="w-4 h-4 mr-2 text-yellow-500" />
+                Pengetahuan • Wawasan • Inovasi
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
               Artikel & Insights
             </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Jelajahi koleksi artikel mendalam tentang teknologi, tutorial, dan insights industri 
-              yang ditulis oleh para ahli kami
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Jelajahi koleksi artikel mendalam yang ditulis langsung melalui Google Spreadsheet
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Search and Filter */}
-      <section className="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {/* SEARCH + FILTER */}
+      <section className="py-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
@@ -168,8 +143,6 @@ const Articles = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
               />
             </div>
-
-            {/* Category Filter */}
             <div className="flex items-center gap-2">
               <Filter className="text-gray-500" size={20} />
               <select
@@ -177,7 +150,7 @@ const Articles = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
               >
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category} value={category}>
                     {category === 'all' ? 'Semua Kategori' : category}
                   </option>
@@ -188,15 +161,20 @@ const Articles = () => {
         </div>
       </section>
 
-      {/* Articles Grid */}
-      <section className="py-12">
+      {/* ARTICLES GRID */}
+      <section className="py-12 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {error && (
-            <div className="mb-8 p-4 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 rounded-lg">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8 p-4 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 rounded-lg"
+            >
               <p className="text-yellow-800 dark:text-yellow-200">
-                Gagal memuat data dari Google Sheets. Menampilkan artikel contoh.
+                Gagal memuat data dari Google Sheets. Silakan coba beberapa saat lagi.
               </p>
-            </div>
+            </motion.div>
           )}
 
           {filteredArticles.length === 0 ? (
@@ -211,9 +189,11 @@ const Articles = () => {
                 <motion.article
                   key={article.id}
                   initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                  viewport={{ once: true }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-white/20 dark:border-gray-700/50"
                 >
                   <div className="relative overflow-hidden">
                     <img
@@ -226,12 +206,6 @@ const Articles = () => {
                         {article.category}
                       </span>
                     </div>
-                    {article.views && (
-                      <div className="absolute top-4 right-4 flex items-center bg-black/50 text-white px-2 py-1 rounded-full text-xs">
-                        <Eye size={12} className="mr-1" />
-                        {article.views}
-                      </div>
-                    )}
                   </div>
 
                   <div className="p-6">
@@ -246,7 +220,7 @@ const Articles = () => {
                       {article.title}
                     </h3>
 
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
                       {article.excerpt}
                     </p>
 
@@ -255,7 +229,7 @@ const Articles = () => {
                         {article.tags.slice(0, 3).map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full"
+                            className="px-2 py-1 bg-blue-100/70 dark:bg-blue-900/70 text-blue-800 dark:text-blue-200 text-xs rounded-full"
                           >
                             <Tag size={10} className="inline mr-1" />
                             {tag}
@@ -276,7 +250,7 @@ const Articles = () => {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors"
                         >
                           Baca Selengkapnya
                         </motion.button>
@@ -287,52 +261,6 @@ const Articles = () => {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Data Integration Info */}
-      <section className="py-12 bg-white dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Konten yang Selalu Update
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Artikel kami dikelola melalui Google Sheets yang memungkinkan tim untuk menambah 
-              dan mengupdate konten secara real-time tanpa perlu mengubah kode website.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 text-sm">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2">
-                  Google Sheets Integration
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Kelola artikel langsung dari spreadsheet online
-                </p>
-              </div>
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">
-                  Real-time Updates
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Konten ter-update otomatis saat spreadsheet diubah
-                </p>
-              </div>
-              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <h4 className="font-semibold text-purple-600 dark:text-purple-400 mb-2">
-                  Team Collaboration
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Tim dapat berkolaborasi mengelola konten dengan mudah
-                </p>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
     </div>

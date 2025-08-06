@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
   Phone, 
@@ -12,8 +12,88 @@ import {
   Twitter, 
   Linkedin, 
   Instagram,
-  Github
+  Github,
+  Sparkles
 } from 'lucide-react';
+
+// This is a re-usable animated grid background component from Home.jsx
+const Squares = ({
+  direction = "right",
+  speed = 1,
+  borderColor = "#999",
+  squareSize = 40,
+}) => {
+  const canvasRef = useRef(null);
+  const requestRef = useRef(null);
+  const gridOffset = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const drawGrid = () => {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const startX = Math.floor(gridOffset.current.x / squareSize) * squareSize;
+      const startY = Math.floor(gridOffset.current.y / squareSize) * squareSize;
+
+      for (let x = startX; x < canvas.width + squareSize; x += squareSize) {
+        for (let y = startY; y < canvas.height + squareSize; y += squareSize) {
+          const squareX = x - (gridOffset.current.x % squareSize);
+          const squareY = y - (gridOffset.current.y % squareSize);
+          ctx.strokeStyle = borderColor;
+          ctx.strokeRect(squareX, squareY, squareSize, squareSize);
+        }
+      }
+    };
+
+    const updateAnimation = () => {
+      const effectiveSpeed = Math.max(speed, 0.1);
+      switch (direction) {
+        case "right":
+          gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
+          break;
+        case "left":
+          gridOffset.current.x = (gridOffset.current.x + effectiveSpeed + squareSize) % squareSize;
+          break;
+        case "up":
+          gridOffset.current.y = (gridOffset.current.y + effectiveSpeed + squareSize) % squareSize;
+          break;
+        case "down":
+          gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
+          break;
+        case "diagonal":
+          gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
+          gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
+          break;
+        default:
+          break;
+      }
+      drawGrid();
+      requestRef.current = requestAnimationFrame(updateAnimation);
+    };
+
+    requestRef.current = requestAnimationFrame(updateAnimation);
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [direction, speed, borderColor, squareSize]);
+
+  return <canvas ref={canvasRef} className="w-full h-full border-none block"></canvas>;
+};
+
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -107,35 +187,51 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screenbg-slate-50 dark:bg-gray-900 overflow-hidden">
+      {/* =================================================================== */}
+      {/* SECTION 1: HEADER (MATCHES HOME.JSX HERO SECTION)                   */}
+      {/* =================================================================== */}
+      <section className="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 pt-20 pb-10 overflow-hidden">
+        {/* Animated blob backgrounds from Home.jsx */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-blue-300/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
+          <div className="absolute bottom-0 right-0 w-72 h-72 md:w-96 md:h-96 bg-purple-300/20 dark:bg-purple-500/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <div className="mb-6">
+              <span className="inline-flex items-center px-4 py-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-white/30 dark:border-gray-700/50 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300">
+                <Sparkles className="w-4 h-4 mr-2 text-yellow-500" />
+                Dukungan • Pertanyaan • Kolaborasi
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
               Hubungi Kami
             </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Kami siap membantu mewujudkan visi teknologi Anda. 
-              Mari diskusikan proyek dan kebutuhan bisnis Anda bersama tim ahli kami.
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Kami siap membantu mewujudkan visi teknologi Anda. Mari diskusikan proyek dan kebutuhan bisnis Anda bersama tim ahli kami.
             </p>
           </motion.div>
         </div>
       </section>
 
+      {/* =================================================================== */}
+      {/* SECTION 2: CONTACT FORM AND INFO (MATCHES HOME.JSX CARD STYLE)      */}
+      {/* =================================================================== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8"
+            viewport={{ once: true }}
+            className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg p-8 border border-white/20 dark:border-gray-700/50"
           >
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -146,17 +242,20 @@ const Contact = () => {
               </p>
             </div>
 
-            {submitStatus === 'success' && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 rounded-lg"
-              >
-                <p className="text-green-800 dark:text-green-200">
-                  Terima kasih! Pesan Anda telah terkirim. Kami akan menghubungi Anda segera.
-                </p>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {submitStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 rounded-lg"
+                >
+                  <p className="text-green-800 dark:text-green-200">
+                    Terima kasih! Pesan Anda telah terkirim. Kami akan menghubungi Anda segera.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -275,7 +374,7 @@ const Contact = () => {
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:from-blue-400 disabled:to-purple-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -295,8 +394,9 @@ const Contact = () => {
           {/* Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             className="space-y-8"
           >
             {/* Contact Info Cards */}
@@ -305,9 +405,10 @@ const Contact = () => {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+                  viewport={{ once: true }}
+                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg p-6 rounded-xl shadow-lg border border-white/20 dark:border-gray-700/50"
                 >
                   <div className="flex items-start space-x-4">
                     <div className={`${info.color} mt-1`}>
@@ -331,9 +432,10 @@ const Contact = () => {
             {/* Social Media */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+              viewport={{ once: true }}
+              className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg p-6 rounded-xl shadow-lg border border-white/20 dark:border-gray-700/50"
             >
               <div className="flex items-center space-x-3 mb-4">
                 <Globe className="text-blue-600 dark:text-blue-400" size={24} />
@@ -351,7 +453,7 @@ const Contact = () => {
                     href={social.url}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`p-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full ${social.color} hover:text-white transition-all duration-300`}
+                    className={`p-3 bg-gray-100/70 dark:bg-gray-700/70 text-gray-600 dark:text-gray-300 rounded-full ${social.color} hover:text-white transition-all duration-300`}
                     title={social.name}
                   >
                     {social.icon}
@@ -363,9 +465,10 @@ const Contact = () => {
             {/* Quick Contact */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl"
+              viewport={{ once: true }}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-lg"
             >
               <div className="flex items-center space-x-3 mb-4">
                 <MessageCircle size={24} />
@@ -390,11 +493,12 @@ const Contact = () => {
         {/* Map Section */}
         <motion.section
           initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
+          viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border border-white/20 dark:border-gray-700/50">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Lokasi Kantor Kami
