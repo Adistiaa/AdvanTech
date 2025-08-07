@@ -144,7 +144,7 @@ const Navbar = () => {
             {/* Ikon Dark Mode & GitHub untuk Desktop */}
             <div className="flex items-center space-x-2">
               <a
-                href="https://github.com/Adistiaa/pilar-sehat.id"
+                href="https://github.com/Adistiaa/AdvanTech"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Lihat repositori GitHub"
@@ -167,7 +167,7 @@ const Navbar = () => {
           <div className="flex items-center md:hidden space-x-2">
             {/* Ikon GitHub untuk Mobile */}
             <a
-              href="https://github.com/Adistiaa/pilar-sehat.id"
+              href="https://github.com/Adistiaa/AdvanTech"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Lihat repositori GitHub"
@@ -176,14 +176,14 @@ const Navbar = () => {
               <Github size={20} />
             </a>
             {/* Tombol Dark Mode untuk Mobile */}
-            <motion.button
+            {/* <motion.button
               onClick={handleToggleDarkMode}
               whileTap={{ scale: 0.95 }}
               aria-label="Toggle mode gelap/terang"
               className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </motion.button>
+            </motion.button> */}
             {/* Tombol Buka/Tutup Menu Mobile */}
             <motion.button
               onClick={() => setMenuOpen(!menuOpen)}

@@ -8,6 +8,8 @@ import ArticleDetail from './pages/ArticleDetail';
 import Contact from './pages/Contact';
 import './App.css'
 import JanganBuka from './components/JanganBuka';
+import ScrollToTop from './components/ScrollToTop';
+import BackToTop from './components/BackToTop';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Router>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
           <Navbar />
+          <ScrollToTop />
+          <BackToTop />
           <main>
             <Routes>
               {/* <Route path="/" element={<JanganBuka />} /> */}
@@ -24,7 +28,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
             </Routes>
           </main>
-          {/* <Footer /> */}
+          <Footer />
         </div>
       </Router>
     </ThemeProvider>

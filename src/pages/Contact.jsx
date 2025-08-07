@@ -13,7 +13,8 @@ import {
   Linkedin, 
   Instagram,
   Github,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 
 // This is a re-usable animated grid background component from Home.jsx
@@ -142,8 +143,8 @@ const Contact = () => {
       icon: <MapPin className="w-6 h-6" />,
       title: "Alamat Kantor",
       details: [
-        "Jl. M.H. Thamrin No. 1",
-        "Jakarta Pusat, DKI Jakarta 10310",
+        "Jl. Dr. KRT Radjiman Widyoningrat No.32, RT.07/RW.7, Rawa Badung, Kec. Cakung,",
+        "Jakarta Timur, DKI Jakarta 13930",
         "Indonesia"
       ],
       color: "text-blue-600 dark:text-blue-400"
@@ -152,8 +153,8 @@ const Contact = () => {
       icon: <Phone className="w-6 h-6" />,
       title: "Telepon",
       details: [
-        "+62 21 1234 5678",
-        "+62 812 3456 7890"
+        "+62 896-9344-0807",
+        "+62 896-9344-0807"
       ],
       color: "text-green-600 dark:text-green-400"
     },
@@ -161,8 +162,8 @@ const Contact = () => {
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
       details: [
-        "info@advantechjournals.com",
-        "contact@advantechjournals.com"
+        "advantech12@gmail.com",
+        "advantech12@gmail.com"
       ],
       color: "text-purple-600 dark:text-purple-400"
     },
@@ -170,8 +171,8 @@ const Contact = () => {
       icon: <Clock className="w-6 h-6" />,
       title: "Jam Operasional",
       details: [
-        "Senin - Jumat: 09:00 - 18:00 WIB",
-        "Sabtu: 09:00 - 15:00 WIB",
+        "Senin - Jumat: 08:00 - 17:00 WIB",
+        "Sabtu: 07:00 - 13:00 WIB",
         "Minggu: Tutup"
       ],
       color: "text-orange-600 dark:text-orange-400"
@@ -329,11 +330,8 @@ const Contact = () => {
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                 >
                   <option value="consultation">Konsultasi Gratis</option>
-                  <option value="web-development">Pengembangan Web</option>
-                  <option value="mobile-app">Aplikasi Mobile</option>
-                  <option value="enterprise-solution">Solusi Enterprise</option>
-                  <option value="ai-ml">AI & Machine Learning</option>
-                  <option value="cloud-services">Cloud Services</option>
+                  <option value="ask-project">Pembicaraan Project</option>
+                  <option value="enterprise-solution">Solusi Permasalahan</option>
                   <option value="maintenance">Maintenance & Support</option>
                   <option value="other">Lainnya</option>
                 </select>
@@ -471,14 +469,14 @@ const Contact = () => {
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-lg"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <MessageCircle size={24} />
+                <MessageSquare size={24} />
                 <h3 className="text-lg font-semibold">Butuh Respon Cepat?</h3>
               </div>
               <p className="text-blue-100 mb-4">
                 Untuk kebutuhan urgent, hubungi langsung tim kami melalui WhatsApp
               </p>
               <motion.a
-                href="https://wa.me/6281234567890"
+                href="https://wa.me/6289693440807"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
@@ -509,7 +507,7 @@ const Contact = () => {
             </div>
             <div className="h-96">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613!3d-6.2087634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sBundaran%20HI!5e0!3m2!1sen!2sid!4v1635000000000!5m2!1sen!2sid"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4341885637587!2d106.9256391!3d-6.2063182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698bcabb1368d7%3A0xea46dd080cc5e54c!2sSMK%20NEGERI%2069%20JAKARTA!5e0!3m2!1sid!2sid!4v1754530935713!5m2!1sid!2sid"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

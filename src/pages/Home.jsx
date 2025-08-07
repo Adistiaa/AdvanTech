@@ -98,28 +98,28 @@ const Home = () => {
 
   // Data untuk Team Members Section
   const teamMembers = [
-    { name: "Ahmad Rizki", role: "CEO & Co-Founder", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face", bio: "Visioner teknologi dengan pengalaman 10+ tahun dalam industri startup dan teknologi.", skills: ["Leadership", "Strategy", "Business Development"], social: { linkedin: "#", twitter: "#", github: "#", email: "ahmad@advantechjournals.com" } },
-    { name: "Sari Dewi", role: "CTO & Co-Founder", image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face", bio: "Expert dalam arsitektur sistem dan pengembangan aplikasi skala enterprise.", skills: ["System Architecture", "Full-Stack Development", "DevOps"], social: { linkedin: "#", twitter: "#", github: "#", email: "sari@advantechjournals.com" } },
-    { name: "Budi Santoso", role: "Lead Developer", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face", bio: "Passionate developer dengan keahlian dalam modern web technologies dan AI.", skills: ["React", "Node.js", "Machine Learning"], social: { linkedin: "#", twitter: "#", github: "#", email: "budi@advantechjournals.com" } },
-    { name: "Maya Putri", role: "UI/UX Designer", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face", bio: "Creative designer yang berfokus pada user experience dan interface design yang intuitif.", skills: ["UI Design", "UX Research", "Prototyping"], social: { linkedin: "#", twitter: "#", github: "#", email: "maya@advantechjournals.com" } },
-    { name: "Andi Wijaya", role: "DevOps Engineer", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face", bio: "Infrastructure specialist dengan expertise dalam cloud computing dan automation.", skills: ["AWS", "Docker", "Kubernetes"], social: { linkedin: "#", twitter: "#", github: "#", email: "andi@advantechjournals.com" } },
-    { name: "Lisa Maharani", role: "Product Manager", image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face", bio: "Strategic thinker yang menghubungkan kebutuhan bisnis dengan solusi teknologi.", skills: ["Product Strategy", "Market Research", "Agile"], social: { linkedin: "#", twitter: "#", github: "#", email: "lisa@advantechjournals.com" } }
+    { name: "Muhammad Adistia Pratama", role: "Leader", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1743302996/WhatsApp_Image_2025-03-02_at_16.35.11_f8a5e4ec_qpobrr.jpg", bio: "I love designing and coding, Passionate about technology, slightly addicted to coffee.", skills: ["Leadership", "Strategy", "Business Development"], social: { linkedin: "#", twitter: "#", github: "#", email: "ahmad@advantechjournals.com" } },
+    { name: "Ikhsan Rasyid Rabbani", role: "Co Leader", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1754537593/WhatsApp_Image_2025-08-07_at_10.10.45_5f128489_f2jhzn.jpg", bio: "Suka dengan mempelajari hal baru, berusaha berkembang setiap hari, dan berpikir jangka panjang.", skills: ["System Architecture", "Full-Stack Development", "DevOps"], social: { linkedin: "#", twitter: "#", github: "#", email: "sari@advantechjournals.com" } },
+    { name: "Muvida Anggraeni", role: "Admin Sosial Media", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1754537592/WhatsApp_Image_2025-08-07_at_10.17.41_f514c881_o6enf7.jpg", bio: "Menyukai trend perkembangan yang sedang terjadi, kreatif, dan inovatif.", skills: ["React", "Node.js", "Machine Learning"], social: { linkedin: "#", twitter: "#", github: "#", email: "budi@advantechjournals.com" } },
+    { name: "Arfa Satrio Anom", role: "Humas", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1754537592/WhatsApp_Image_2025-08-07_at_10.18.44_6dbfa9b6_mwr149.jpg", bio: "Creative designer yang berfokus pada user experience dan interface design yang intuitif.", skills: ["UI Design", "UX Research", "Prototyping"], social: { linkedin: "#", twitter: "#", github: "#", email: "maya@advantechjournals.com" } },
+    { name: "Novita Anggraeni", role: "Bendahara", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1754537592/WhatsApp_Image_2025-08-07_at_10.20.55_e6bdaa4b_exfxiy.jpg", bio: "Infrastructure specialist dengan expertise dalam cloud computing dan automation.", skills: ["AWS", "Docker", "Kubernetes"], social: { linkedin: "#", twitter: "#", github: "#", email: "andi@advantechjournals.com" } },
+    { name: "Nazwa Khairiyah", role: "Sekretaris", image: "https://res.cloudinary.com/dxbkwpm3i/image/upload/v1754537592/WhatsApp_Image_2025-08-07_at_10.15.40_96665cd3_d3o9lq.jpg", bio: "Strategic thinker yang menghubungkan kebutuhan bisnis dengan solusi teknologi.", skills: ["Product Strategy", "Market Research", "Agile"], social: { linkedin: "#", twitter: "#", github: "#", email: "lisa@advantechjournals.com" } }
   ];
 
   // Data untuk Testimonials Section
-  const testimonials = [
-    { name: "Dr. Sarah Johnson", role: "CEO, TechCorp", image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face", rating: 5, text: "Platform yang mereka kembangkan sangat user-friendly dan robust. Tim mereka sangat profesional." },
-    { name: "Michael Chen", role: "CTO, InnovateHub", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face", rating: 5, text: "Kualitas code dan arsitektur yang dibuat oleh tim AdvantechJournals luar biasa. Highly recommended!" },
-    { name: "Rina Kartika", role: "Founder, StartupBaru", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face", rating: 5, text: "AdvantechJournals tidak hanya deliver on time, tapi juga memberikan insights berharga untuk product." },
-  ];
+  // const testimonials = [
+  //   { name: "Dr. Sarah Johnson", role: "CEO, TechCorp", image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face", rating: 5, text: "Platform yang mereka kembangkan sangat user-friendly dan robust. Tim mereka sangat profesional." },
+  //   { name: "Michael Chen", role: "CTO, InnovateHub", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face", rating: 5, text: "Kualitas code dan arsitektur yang dibuat oleh tim AdvantechJournals luar biasa. Highly recommended!" },
+  //   { name: "Rina Kartika", role: "Founder, StartupBaru", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face", rating: 5, text: "AdvantechJournals tidak hanya deliver on time, tapi juga memberikan insights berharga untuk product." },
+  // ];
   const renderStars = (rating) => Array.from({ length: 5 }, (_, i) => <Star key={i} className={`w-5 h-5 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />);
 
   // Data dan Logic untuk FAQ Section
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const faqs = [
-    { question: "Apa itu AdvantechJournals?", answer: "AdvantechJournals adalah perusahaan teknologi yang fokus pada pengembangan solusi digital inovatif, termasuk web, mobile, dan AI." },
-    { question: "Berapa lama waktu pengerjaan proyek?", answer: "Tergantung kompleksitas. Website sederhana sekitar 2-4 minggu, aplikasi mobile 6-12 minggu. Kami akan berikan timeline detail setelah diskusi." },
-    { question: "Apakah ada garansi?", answer: "Ya, kami memberikan garansi 6 bulan untuk bug fixing dan support 24/7." },
+    { question: "Apa itu AdvanTech?", answer: "AdvanTech adalah tim teknologi yang fokus pada pengembangan solusi digital inovatif, termasuk web, mobile, dan AI." },
+    { question: "Berapa lama waktu pengerjaan proyek?", answer: "Tergantung dengan kompleksitas fitur, serta deadline yang di berikan." },
+    { question: "Apakah ada jaminan garansi?", answer: "Ya, kami memberikan garansi 6 bulan untuk bug fixing dan support 24/7." },
     { question: "Bagaimana proses kerjanya?", answer: "Kami menggunakan metodologi Agile: Konsultasi -> Desain -> Development -> Testing -> Deployment -> Support." },
   ];
   const toggleFAQ = (index) => setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -211,7 +211,7 @@ const Home = () => {
           variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } }}
           className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto"
               >
-          AdvantechJournals: Partner Anda dalam membangun solusi digital yang powerful, scalable, dan aman untuk membawa bisnis Anda ke level berikutnya.
+          AdvanTech: Partner untuk membangun solusi digital yang powerful, scalable, dan aman menuju bisnis ke level berikutnya.
               </motion.p>
 
               <motion.div
@@ -246,6 +246,7 @@ const Home = () => {
               </motion.div>
             </button>
           </motion.div>
+
         </section>
         {/* =================================================================== */}
         {/* SECTION 2: QUOTES                                                 */}
@@ -344,14 +345,14 @@ const Home = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">Cerita Tim Kami</h2>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">Perjalanan dan makna di balik nama AdvantechJournals</p>
+                    <p className="text-xl text-gray-600 dark:text-gray-300">Perjalanan dan makna di balik nama AdvanTech</p>
                 </motion.div>
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg p-8 rounded-xl shadow-lg border border-white/20 dark:border-gray-700/50">
                         <Lightbulb className="text-blue-600 dark:text-blue-400 mb-4" size={48} />
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Arti Nama "AdvantechJournals"</h3>
-                        <p className="text-gray-700 dark:text-gray-300"><strong className="text-blue-600 dark:text-blue-400">Advantech</strong> - Gabungan "Advanced" dan "Technology", mencerminkan komitmen kami pada teknologi terdepan.</p>
-                        <p className="text-gray-700 dark:text-gray-300 mt-2"><strong className="text-blue-600 dark:text-blue-400">Journals</strong> - Melambangkan perjalanan dokumentasi dan berbagi pengetahuan.</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Arti Nama "AdvanTech"</h3>
+                        <p className="text-gray-700 dark:text-gray-300"><strong className="text-blue-600 dark:text-blue-400">Advan</strong> - Kepanjangan "Advanced", mencerminkan komitmen kami akan masa depan.</p>
+                        <p className="text-gray-700 dark:text-gray-300 mt-2"><strong className="text-blue-600 dark:text-blue-400">Tech</strong> - Melambangkan Teknologi yang akan selalu berkembang dan sangat di butuhkan.</p>
                     </motion.div>
                     <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="space-y-6">
                         <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg p-6 rounded-xl shadow-lg border border-white/20 dark:border-gray-700/50"><Target className="text-green-600 dark:text-green-400 mb-3" size={32} /><h4 className="text-xl font-bold text-gray-900 dark:text-white">Visi Kami</h4><p className="text-gray-700 dark:text-gray-300">Menjadi perusahaan teknologi terdepan yang mengubah interaksi dunia dengan digital.</p></div>
@@ -375,19 +376,27 @@ const Home = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {teamMembers.map((member, index) => (
                         <motion.div key={index} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: index * 0.1 }} viewport={{ once: true }} whileHover={{ y: -10 }} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 dark:border-gray-700/50">
-                            <img src={member.image} alt={member.name} className="w-full h-64 object-cover" />
-                            <div className="p-6">
+                            <div className="p-6 flex justify-center">
+                                <img
+                                    src={member.image}
+                                    alt={member.name}
+                                    className="w-32 h-32 object-cover rounded-full pointer-events-none"
+                                    draggable="false"
+                                    onDragStart={(e) => e.preventDefault()}
+                                />
+                            </div>
+                            <div className="p-6 text-center">
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">{member.name}</h3>
                                 <p className="text-blue-600 dark:text-blue-400 font-semibold mb-3">{member.role}</p>
                                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">{member.bio}</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
+                                <div className="flex flex-wrap gap-2 mb-4 justify-center">
                                     {member.skills.map((skill, i) => <span key={i} className="px-3 py-1 bg-blue-100/70 dark:bg-blue-900/70 text-blue-800 dark:text-blue-200 text-xs rounded-full">{skill}</span>)}
                                 </div>
-                                <div className="flex space-x-3">
-                                    <a href={member.social.linkedin} className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"><Linkedin size={16} /></a>
-                                    <a href={member.social.twitter} className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"><Twitter size={16} /></a>
-                                    <a href={member.social.github} className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-900 transition-colors"><Github size={16} /></a>
-                                    <a href={`mailto:${member.social.email}`} className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"><Mail size={16} /></a>
+                                <div className="flex space-x-3 justify-center">
+                                    <motion.a href={member.social.linkedin} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"><Linkedin size={16} /></motion.a>
+                                    <motion.a href={member.social.twitter} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"><Twitter size={16} /></motion.a>
+                                    <motion.a href={member.social.github} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-900 transition-colors"><Github size={16} /></motion.a>
+                                    <motion.a href={`mailto:${member.social.email}`} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"><Mail size={16} /></motion.a>
                                 </div>
                             </div>
                         </motion.div>
@@ -399,7 +408,7 @@ const Home = () => {
         {/* =================================================================== */}
         {/* SECTION 6: TESTIMONIALS                                           */}
         {/* =================================================================== */}
-        <section id="testimonials-section" className="py-20 relative overflow-hidden bg-gradient-to-b from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
+        {/* <section id="testimonials-section" className="py-20 relative overflow-hidden bg-gradient-to-b from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">Testimoni Klien</h2>
@@ -421,7 +430,7 @@ const Home = () => {
                     ))}
                 </div>
             </div>
-        </section>
+        </section> */}
 
         {/* =================================================================== */}
         {/* SECTION 8: FAQ                                                    */}
@@ -465,15 +474,15 @@ const Home = () => {
                 </motion.div>
                 <div className="grid lg:grid-cols-2 gap-12">
                     <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="h-96 lg:h-full min-h-[400px]">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613!3d-6.2087634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sBundaran%20HI!5e0!3m2!1sen!2sid!4v1635000000000!5m2!1sen!2sid" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" className="rounded-xl shadow-lg" title="Office Location"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4341885637587!2d106.9256391!3d-6.2063182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698bcabb1368d7%3A0xea46dd080cc5e54c!2sSMK%20NEGERI%2069%20JAKARTA!5e0!3m2!1sid!2sid!4v1754530935713!5m2!1sid!2sid" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" className="rounded-xl shadow-lg" title="Office Location"></iframe>
                     </motion.div>
                     <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg p-8 rounded-xl shadow-lg border border-white/20 dark:border-gray-700/50">
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Informasi Kontak</h3>
                         <div className="space-y-6 text-gray-800 dark:text-gray-200">
-                            <div className="flex items-start space-x-4"><MapPin className="text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" /><p>Jl. M.H. Thamrin No. 1, Jakarta Pusat</p></div>
-                            <div className="flex items-start space-x-4"><Phone className="text-green-600 dark:text-green-400 mt-1 flex-shrink-0" /><p>+62 21 1234 5678</p></div>
-                            <div className="flex items-start space-x-4"><Mail className="text-purple-600 dark:text-purple-400 mt-1 flex-shrink-0" /><p>info@advantechjournals.com</p></div>
-                            <div className="flex items-start space-x-4"><Clock className="text-orange-600 dark:text-orange-400 mt-1 flex-shrink-0" /><p>Senin - Jumat: 09:00 - 18:00 WIB</p></div>
+                            <div className="flex items-start space-x-4"><MapPin className="text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" /><p>Jl. Dr. KRT Radjiman Widyoningrat No.32, RT.07/RW.7, Rawa Badung, Kec. Cakung, Kota Jakarta Timur, DKI Jakarta 13930</p></div>
+                            <div className="flex items-start space-x-4"><Phone className="text-green-600 dark:text-green-400 mt-1 flex-shrink-0" /><p>+62 896-9344-0807</p></div>
+                            <div className="flex items-start space-x-4"><Mail className="text-purple-600 dark:text-purple-400 mt-1 flex-shrink-0" /><p>advantech12@gmail.com</p></div>
+                            <div className="flex items-start space-x-4"><Clock className="text-orange-600 dark:text-orange-400 mt-1 flex-shrink-0" /><p>Senin - Jumat: 08:00 - 17:00 WIB</p></div>
                         </div>
                     </motion.div>
                 </div>
