@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -10,11 +10,35 @@ import {
   Filter,
   Eye,
   Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 
-// URL Google Spreadsheet kamu:
+// URL for your Google Spreadsheet:
 const SHEET_URL =
   'https://opensheet.elk.sh/13eeM4b6n5qSS4F_PtCDhNX3cEhzkxEbZEwPFILNYFAk/1';
+
+// Skeleton component for loading state
+const ArticleCardSkeleton = () => (
+  <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border border-white/20 dark:border-gray-700/50 animate-pulse">
+    <div className="w-full h-48 bg-gray-300 dark:bg-gray-700"></div>
+    <div className="p-6">
+      <div className="flex items-center space-x-4 mb-3">
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/4"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/4"></div>
+      </div>
+      <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
+      <div className="space-y-2 mb-4">
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-5/6"></div>
+      </div>
+      <div className="flex items-center justify-between mt-4">
+        <div className="h-5 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
+        <div className="h-10 bg-blue-400/50 dark:bg-blue-800/50 rounded-lg w-32"></div>
+      </div>
+    </div>
+  </div>
+);
+
 
 const Articles = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,39 +48,51 @@ const Articles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Fetch dari Google Sheets
-  useEffect(() => {
-    fetch(SHEET_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        const mapped = data.map((item, index) => ({
-          id: index + 1,
-          title: item['Judul Artikel'],
-          excerpt: item['Materi Artikel Bagian 1']?.slice(0, 150) + '...',
-          content: item['Materi Artikel Bagian 1'] + '\n\n' + item['Materi Artikel Bagian 2'],
-          author: 'AdvanTech Team',
-          date: new Date().toISOString().split('T')[0],
-          category: item['Kategori'] || 'Umum',
-          readTime: `${Math.ceil(
-            ((item['Materi Artikel Bagian 1']?.length || 0) +
-              (item['Materi Artikel Bagian 2']?.length || 0)) /
-              650
-          )} min read`,
-          tags: ['Artikel', 'Tim'],
-          image: item['Link Gambar 1 (Header)'],
-          conclusion: item['Kesimpulan'],
-        }));
+  // Fetch data from Google Sheets using useCallback to memoize the function
+  const fetchArticles = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(SHEET_URL);
+      if (!res.ok) {
+        // Corrected line: The string is now properly enclosed in backticks
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      const mapped = data.map((item, index) => ({
+        id: index + 1,
+        title: item['Judul Artikel'],
+        excerpt: item['Materi Artikel Bagian 1']?.slice(0, 150) + '...',
+        content: item['Materi Artikel Bagian 1'] + '\n\n' + item['Materi Artikel Bagian 2'],
+        author: 'AdvanTech Team',
+        date: new Date().toISOString().split('T')[0], // Using current date as placeholder
+        category: item['Kategori'] || 'Umum',
+        readTime: `${Math.ceil(
+          ((item['Materi Artikel Bagian 1']?.length || 0) +
+            (item['Materi Artikel Bagian 2']?.length || 0)) /
+            650 // Average reading speed
+        )} min read`,
+        tags: ['Artikel', 'Tim'],
+        image: item['Link Gambar 1 (Header)'],
+        conclusion: item['Kesimpulan'],
+      }));
 
-        setArticles(mapped);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Gagal fetch dari spreadsheet:', err);
-        setError(true);
-        setLoading(false);
-      });
+      setArticles(mapped);
+    } catch (err) {
+      console.error('Failed to fetch from spreadsheet:', err);
+      setError(true);
+    } finally {
+      // Add a small delay to make the loading animation noticeable
+      setTimeout(() => setLoading(false), 500);
+    }
   }, []);
 
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  // Effect for filtering articles when search term, category, or the main articles list changes
   useEffect(() => {
     let filtered = [...articles];
 
@@ -82,25 +118,15 @@ const Articles = () => {
     setFilteredArticles(filtered);
   }, [searchTerm, selectedCategory, articles]);
 
+  // Dynamically generate categories from the fetched articles
   const categories = [
     'all',
     ...new Set(articles.map((article) => article.category || 'Umum')),
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-20 flex items-center justify-center bg-slate-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading articles...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white dark:bg-gray-900">
-      {/* HERO */}
+      {/* HERO SECTION */}
       <section className="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 pt-20 pb-10 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-blue-300/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
@@ -129,40 +155,52 @@ const Articles = () => {
         </div>
       </section>
 
-      {/* SEARCH + FILTER */}
-      <section className="py-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      {/* SEARCH, FILTER, AND REFRESH SECTION */}
+      <section className="py-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-grow w-full md:w-auto md:max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder="Cari artikel..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="text-gray-500" size={20} />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <div className="flex items-center gap-2 flex-grow">
+                <Filter className="text-gray-500" size={20} />
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'Semua Kategori' : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <motion.button
+                onClick={fetchArticles}
+                disabled={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Refresh articles"
               >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'Semua Kategori' : category}
-                  </option>
-                ))}
-              </select>
+                <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+              </motion.button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ARTICLES GRID */}
-      <section className="py-12 bg-white dark:bg-gray-900">
+      {/* ARTICLES GRID SECTION */}
+      <section className="py-12 bg-slate-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {error && (
             <motion.div
@@ -177,23 +215,22 @@ const Articles = () => {
             </motion.div>
           )}
 
-          {filteredArticles.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-300 text-lg">
-                Tidak ada artikel yang ditemukan.
-              </p>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredArticles.map((article, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+              // Show 6 skeleton cards while loading
+              Array.from({ length: 6 }).map((_, index) => (
+                <ArticleCardSkeleton key={index} />
+              ))
+            ) : filteredArticles.length > 0 ? (
+              // Show actual articles once loaded
+              filteredArticles.map((article, index) => (
                 <motion.article
                   key={article.id}
                   initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-white/20 dark:border-gray-700/50"
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-white/20 dark:border-gray-700/50 flex flex-col group"
                 >
                   <div className="relative overflow-hidden">
                     <img
@@ -202,17 +239,17 @@ const Articles = () => {
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">
+                      <span className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full font-semibold">
                         {article.category}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
-                      <Calendar size={16} className="mr-1" />
+                      <Calendar size={16} className="mr-1.5" />
                       <span className="mr-4">{new Date(article.date).toLocaleDateString('id-ID')}</span>
-                      <Clock size={16} className="mr-1" />
+                      <Clock size={16} className="mr-1.5" />
                       <span>{article.readTime}</span>
                     </div>
 
@@ -220,28 +257,14 @@ const Articles = () => {
                       {article.title}
                     </h3>
 
-                    <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3 flex-grow">
                       {article.excerpt}
                     </p>
 
-                    {article.tags && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {article.tags.slice(0, 3).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className="px-2 py-1 bg-blue-100/70 dark:bg-blue-900/70 text-blue-800 dark:text-blue-200 text-xs rounded-full"
-                          >
-                            <Tag size={10} className="inline mr-1" />
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between">
+                    <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                       <div className="flex items-center">
                         <User size={16} className="mr-2 text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                        <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
                           {article.author}
                         </span>
                       </div>
@@ -250,7 +273,7 @@ const Articles = () => {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors"
+                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors shadow-md hover:shadow-lg"
                         >
                           Baca Selengkapnya
                         </motion.button>
@@ -258,9 +281,16 @@ const Articles = () => {
                     </div>
                   </div>
                 </motion.article>
-              ))}
-            </div>
-          )}
+              ))
+            ) : (
+              // Show message if no articles are found after loading
+              <div className="text-center py-12 md:col-span-2 lg:col-span-3">
+                <p className="text-gray-600 dark:text-gray-300 text-lg">
+                  Tidak ada artikel yang cocok dengan pencarian Anda.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>
