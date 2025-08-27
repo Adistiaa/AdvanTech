@@ -5,19 +5,33 @@ import {
   Calendar,
   User,
   Clock,
-  Tag,
-  Search,
   Filter,
-  Eye,
+  Search,
   Sparkles,
   RefreshCw,
 } from 'lucide-react';
 
-// URL for your Google Spreadsheet:
 const SHEET_URL =
   'https://opensheet.elk.sh/13eeM4b6n5qSS4F_PtCDhNX3cEhzkxEbZEwPFILNYFAk/1';
 
-// Skeleton component for loading state
+// Helper format date ke dd/MM/yyyy
+function formatDate(dateString) {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString; // fallback kalau gagal parse
+    }
+    return date.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+}
+
+// Skeleton Loading
 const ArticleCardSkeleton = () => (
   <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg overflow-hidden border border-white/20 dark:border-gray-700/50 animate-pulse">
     <div className="w-full h-48 bg-gray-300 dark:bg-gray-700"></div>
@@ -39,7 +53,6 @@ const ArticleCardSkeleton = () => (
   </div>
 );
 
-
 const Articles = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -48,85 +61,82 @@ const Articles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Fetch data from Google Sheets using useCallback to memoize the function
+  // Fetch Articles
   const fetchArticles = useCallback(async () => {
     setLoading(true);
     setError(false);
     try {
       const res = await fetch(SHEET_URL);
-      if (!res.ok) {
-        // Corrected line: The string is now properly enclosed in backticks
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
-      const mapped = data.map((item, index) => ({
-        id: index + 1,
-        title: item['Judul Artikel'],
-        excerpt: item['Materi Artikel Bagian 1']?.slice(0, 150) + '...',
-        content: item['Materi Artikel Bagian 1'] + '\n\n' + item['Materi Artikel Bagian 2'],
-        author: 'AdvanTech Team',
-        date: new Date().toISOString().split('T')[0], // Using current date as placeholder
-        category: item['Kategori'] || 'Umum',
-        readTime: `${Math.ceil(
-          ((item['Materi Artikel Bagian 1']?.length || 0) +
-            (item['Materi Artikel Bagian 2']?.length || 0)) /
-            650 // Average reading speed
-        )} min read`,
-        tags: ['Artikel', 'Tim'],
-        image: item['Link Gambar 1 (Header)'],
-        conclusion: item['Kesimpulan'],
-      }));
+
+      const mapped = data.map((item, index) => {
+        const rawTimestamp = item['Timestamp'];
+        const finalDate = rawTimestamp
+          ? formatDate(rawTimestamp)
+          : 'Tanggal tidak tersedia';
+
+        return {
+          id: index + 1,
+          title: item['Judul Artikel'],
+          excerpt: item['Materi Artikel Bagian 1']?.slice(0, 150) + '...',
+          content:
+            (item['Materi Artikel Bagian 1'] || '') +
+            '\n\n' +
+            (item['Materi Artikel Bagian 2'] || ''),
+          author: 'AdvanTech Team',
+          date: finalDate,
+          category: item['Kategori'] || 'Umum',
+          readTime: item['Durasi Baca'] || '5 min',
+          tags: ['Artikel', 'Tim'],
+          image: item['Link Gambar 1 (Header)'],
+          conclusion: item['Kesimpulan'],
+        };
+      });
 
       setArticles(mapped);
     } catch (err) {
       console.error('Failed to fetch from spreadsheet:', err);
       setError(true);
     } finally {
-      // Add a small delay to make the loading animation noticeable
       setTimeout(() => setLoading(false), 500);
     }
   }, []);
 
-  // Initial fetch on component mount
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
 
-  // Effect for filtering articles when search term, category, or the main articles list changes
   useEffect(() => {
     let filtered = [...articles];
-
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(
-        (article) =>
-          article.category &&
-          article.category.toLowerCase() === selectedCategory.toLowerCase()
+        (a) =>
+          a.category &&
+          a.category.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
-
     if (searchTerm) {
       filtered = filtered.filter(
-        (article) =>
-          article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          article.tags?.some((tag) =>
+        (a) =>
+          a.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          a.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          a.tags?.some((tag) =>
             tag.toLowerCase().includes(searchTerm.toLowerCase())
           )
       );
     }
-
     setFilteredArticles(filtered);
   }, [searchTerm, selectedCategory, articles]);
 
-  // Dynamically generate categories from the fetched articles
   const categories = [
     'all',
-    ...new Set(articles.map((article) => article.category || 'Umum')),
+    ...new Set(articles.map((a) => a.category || 'Umum')),
   ];
 
   return (
     <div className="bg-white dark:bg-gray-900">
-      {/* HERO SECTION */}
+      {/* HERO */}
       <section className="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 pt-20 pb-10 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-blue-300/20 dark:bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
@@ -155,7 +165,7 @@ const Articles = () => {
         </div>
       </section>
 
-      {/* SEARCH, FILTER, AND REFRESH SECTION */}
+      {/* SEARCH & FILTER */}
       <section className="py-8 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -177,9 +187,9 @@ const Articles = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 'Semua Kategori' : category}
+                  {categories.map((c) => (
+                    <option key={c} value={c}>
+                      {c === 'all' ? 'Semua Kategori' : c}
                     </option>
                   ))}
                 </select>
@@ -199,7 +209,7 @@ const Articles = () => {
         </div>
       </section>
 
-      {/* ARTICLES GRID SECTION */}
+      {/* ARTICLES GRID */}
       <section className="py-12 bg-slate-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {error && (
@@ -217,18 +227,16 @@ const Articles = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {loading ? (
-              // Show 6 skeleton cards while loading
-              Array.from({ length: 6 }).map((_, index) => (
-                <ArticleCardSkeleton key={index} />
+              Array.from({ length: 6 }).map((_, i) => (
+                <ArticleCardSkeleton key={i} />
               ))
             ) : filteredArticles.length > 0 ? (
-              // Show actual articles once loaded
-              filteredArticles.map((article, index) => (
+              filteredArticles.map((article, i) => (
                 <motion.article
                   key={article.id}
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-white/20 dark:border-gray-700/50 flex flex-col group"
                 >
@@ -248,9 +256,9 @@ const Articles = () => {
                   <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <Calendar size={16} className="mr-1.5" />
-                      <span className="mr-4">{new Date(article.date).toLocaleDateString('id-ID')}</span>
+                      <span className="mr-4">{article.date}</span>
                       <Clock size={16} className="mr-1.5" />
-                      <span>{article.readTime}</span>
+                      <span>{article.readTime} Membaca</span>
                     </div>
 
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -283,7 +291,6 @@ const Articles = () => {
                 </motion.article>
               ))
             ) : (
-              // Show message if no articles are found after loading
               <div className="text-center py-12 md:col-span-2 lg:col-span-3">
                 <p className="text-gray-600 dark:text-gray-300 text-lg">
                   Tidak ada artikel yang cocok dengan pencarian Anda.
