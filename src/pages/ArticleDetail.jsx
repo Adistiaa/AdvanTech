@@ -11,13 +11,29 @@ import {
 // URL untuk mengambil data dari Google Sheet
 const SHEET_URL = 'https://opensheet.elk.sh/13eeM4b6n5qSS4F_PtCDhNX3cEhzkxEbZEwPFILNYFAk/1';
 
+// Helper format date ke dd/MM/yyyy
+function formatDate(dateString) {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString; // fallback kalau gagal parse
+    }
+    return date.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateString;
+  }
+}
+
 const ArticleDetail = () => {
   const { id } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Menambahkan smooth scroll behavior ke HTML
     document.documentElement.style.scrollBehavior = 'smooth';
     
     fetch(SHEET_URL)
@@ -26,7 +42,6 @@ const ArticleDetail = () => {
         const formatted = data.map((item, index) => ({
           id: index + 1,
           title: item['Judul Artikel'],
-          // Memanggil fungsi formatToHTML untuk memformat konten
           content: formatToHTML(item),
           author: item['Author'] || 'AdvanTech Team',
           date: item['Timestamp'] || '2025-01-01',
@@ -45,14 +60,12 @@ const ArticleDetail = () => {
         setLoading(false);
       });
       
-    // Membersihkan style saat komponen di-unmount
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
     };
   }, [id]);
 
-  // Fungsi untuk memformat konten dari Google Sheet menjadi HTML
-  // Menambahkan ID dan styling khusus untuk heading
+  // Format HTML dari Google Sheets
   const formatToHTML = (item) => {
     const headingStyle = "text-2xl font-bold text-gray-900 dark:text-white mb-4 mt-8 border-l-4 border-blue-600 pl-4";
     return `
@@ -66,7 +79,7 @@ const ArticleDetail = () => {
     `;
   };
 
-  // Fungsi untuk berbagi artikel ke media sosial
+  // Share Artikel
   const shareArticle = (platform) => {
     const url = window.location.href;
     const title = article?.title || '';
@@ -78,12 +91,10 @@ const ArticleDetail = () => {
     window.open(shareUrls[platform], '_blank', 'width=600,height=400');
   };
 
-  // Tampilan saat loading
   if (loading) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          {/* Loading Spinner SVG yang lebih modern */}
           <svg className="animate-spin h-16 w-16 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -94,7 +105,6 @@ const ArticleDetail = () => {
     );
   }
 
-  // Tampilan jika artikel tidak ditemukan
   if (!article) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
@@ -145,6 +155,7 @@ const ArticleDetail = () => {
             </span>
           </div>
         </motion.nav>
+
         {/* Tombol Kembali */}
         <Link to="/articles" className="inline-block mb-4">
           <motion.button
@@ -182,7 +193,7 @@ const ArticleDetail = () => {
             </div>
           </div>
 
-          {/* Isi Konten Artikel */}
+          {/* Isi Konten */}
           <div className="p-6 md:p-8">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -193,7 +204,7 @@ const ArticleDetail = () => {
               {article.title}
             </motion.h1>
 
-            {/* Informasi Meta */}
+            {/* Meta Info */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -201,11 +212,11 @@ const ArticleDetail = () => {
               className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-8 text-sm text-gray-600 dark:text-gray-400"
             >
               <div className="flex items-center"><User size={16} className="mr-2" /><span>{article.author}</span></div>
-              <div className="flex items-center"><Calendar size={16} className="mr-2" /><span>{new Date(article.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
+              <div className="flex items-center"><Calendar size={16} className="mr-2" /><span>{formatDate(article.date)}</span></div>
               <div className="flex items-center"><Clock size={16} className="mr-2" /><span>{article.readTime} membaca</span></div>
             </motion.div>
 
-            {/* Daftar Isi (Table of Contents) */}
+            {/* Daftar Isi */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -237,7 +248,7 @@ const ArticleDetail = () => {
               <button onClick={() => shareArticle('linkedin')} className="p-2 bg-blue-800 text-white rounded-full hover:bg-blue-900 transition-colors"><Linkedin size={16} /></button>
             </motion.div>
 
-            {/* Konten Artikel dari HTML */}
+            {/* Isi Artikel */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -248,7 +259,7 @@ const ArticleDetail = () => {
           </div>
         </motion.div>
 
-        {/* Call to Action */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
